@@ -224,10 +224,10 @@
 		.toast { position: fixed; z-index: 20; right: 18px; bottom: 87px; max-width: calc(100vw - 36px); border-radius: 10px; padding: 12px 16px; color: white; background: #213d31; box-shadow: var(--shadow); font-size: 12px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: .2s; }
 		.toast.show { opacity: 1; transform: translateY(0); }
 		.theme-toggle { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; color: var(--ink); background: var(--surface); font-size: 17px; }
-		.chat-launcher { position: fixed; z-index: 30; right: 22px; bottom: 24px; width: 60px; height: 60px; display: none; place-items: center; border: 0; border-radius: 19px; color: white; background: var(--green); box-shadow: 0 10px 28px #174d3b40; font-size: 23px; }
+		.chat-launcher { position: fixed; z-index: 30; right: 16px; bottom: calc(82px + env(safe-area-inset-bottom)); min-width: 58px; min-height: 54px; display: none; place-items: center; gap: 6px; border: 0; border-radius: 16px; padding: 0 13px; color: white; background: var(--green); box-shadow: 0 10px 28px #174d3b40; font-size: 13px; font-weight: 750; }
 		.chat-launcher.visible { display: grid; }
 		.chat-launcher:hover { background: var(--green-dark); }
-		.chat-panel { position: fixed; z-index: 31; right: 22px; bottom: 96px; width: min(390px, calc(100vw - 28px)); height: min(600px, calc(100dvh - 120px)); display: none; grid-template-rows: auto 1fr auto auto; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: var(--surface); box-shadow: 0 24px 70px #10251c35; }
+		.chat-panel { position: fixed; z-index: 31; right: 12px; bottom: calc(146px + env(safe-area-inset-bottom)); width: min(390px, calc(100vw - 24px)); height: min(590px, calc(100dvh - 190px)); min-height: 330px; display: none; grid-template-rows: auto 1fr auto auto auto; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 24px 70px #10251c35; }
 		.chat-panel.open { display: grid; animation: appear .2s ease both; }
 		.chat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 17px; color: white; background: var(--green); }
 		.chat-heading { display: flex; align-items: center; gap: 11px; }
@@ -244,6 +244,8 @@
 		.chat-form { display: grid; grid-template-columns: 1fr 44px; gap: 8px; padding: 10px 13px 13px; }
 		.chat-form input { min-width: 0; height: 44px; border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; color: var(--ink); background: var(--surface); font-size: 13px; }
 		.chat-send { border: 0; border-radius: 12px; color: white; background: var(--green); font-size: 18px; }
+		.chat-local-note { margin: -7px 13px 10px; color: var(--muted); font-size: 9px; text-align: center; }
+		.chat-close:focus-visible, .chat-launcher:focus-visible, .chat-send:focus-visible, .chat-quick-actions button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
 		.route-map-status { position: absolute; z-index: 2; top: 12px; left: 12px; border: 1px solid #dfe6dc; border-radius: 8px; padding: 7px 9px; color: #45534a; background: #ffffffed; font-size: 10px; }
 		.leaflet-route-indoor { color: var(--green); }
 		.leaflet-route-outdoor { color: #2d78b7; }
@@ -260,6 +262,10 @@
 		body[data-theme="dark"] .chat-message.user { color: white; background: #397e5b; }
 		body[data-theme="dark"] .route-data-note { color: #d0c59f; background: #383523; }
 		body[data-theme="dark"] .navigation-state, body[data-theme="dark"] .class-time, body[data-theme="dark"] .route-stat strong, body[data-theme="dark"] .text-button { color: #a9e1bf; }
+		body[data-theme="dark"] .theme-toggle { color: var(--ink); background: var(--surface); }
+		body[data-theme="dark"] .chat-quick-actions button { color: #a9e1bf; background: var(--surface); }
+		body[data-theme="dark"] .chat-form input { color: var(--ink); background: #26352c; }
+		@media (min-width: 900px) { .chat-launcher { right: 24px; bottom: 28px; } .chat-panel { right: 24px; bottom: 96px; height: min(620px, calc(100dvh - 125px)); } }
 
 		@media (min-width: 900px) {
 			.bottom-nav { position: sticky; bottom: 0; margin: 18px -34px 0; border: 0; background: transparent; backdrop-filter: none; }
@@ -333,7 +339,8 @@
 				<span class="brand-mark">C</span>
 				<span class="brand-name">Campus<span>Saathi</span></span>
 			</button>
-			<div class="topbar-right" id="topbarUser" hidden><span class="campus-label">Lovely Professional University</span><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" title="Switch theme">☾</button><span class="avatar" id="topAvatar">AS</span></div>
+			<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch theme">☾</button>
+			<div class="topbar-right" id="topbarUser" hidden><span class="campus-label">Lovely Professional University</span><span class="avatar" id="topAvatar">SM</span></div>
 		</header>
 		<main>
 			<section class="screen welcome-screen active" id="screen-welcome" aria-labelledby="welcomeTitle">
@@ -388,7 +395,7 @@
 	</div>
 	<nav class="bottom-nav" id="bottomNav" aria-label="Main navigation"><div class="nav-inner"><button class="nav-button active" type="button" data-screen="home"><span class="nav-icon">⌂</span><span>Home</span></button><button class="nav-button" type="button" data-screen="schedule"><span class="nav-icon">▤</span><span>Schedule</span></button><button class="nav-button" type="button" data-screen="map"><span class="nav-icon">⌖</span><span>Campus Map</span></button><button class="nav-button" type="button" data-screen="profile"><span class="nav-icon">◉</span><span>Profile</span></button></div></nav>
 	<button class="chat-launcher" id="chatLauncher" type="button" aria-label="Open CampusSaathi Assistant" aria-expanded="false" aria-controls="chatPanel">✳</button>
-	<aside class="chat-panel" id="chatPanel" aria-label="CampusSaathi Assistant" aria-hidden="true"><header class="chat-header"><div class="chat-heading"><span class="chat-avatar" aria-hidden="true">C</span><div><strong>CampusSaathi Assistant</strong><small>Campus help · available offline</small></div></div><button class="chat-close" id="chatClose" type="button" aria-label="Close assistant">×</button></header><div class="chat-transcript" id="chatTranscript" role="log" aria-live="polite" aria-relevant="additions text"></div><div class="chat-quick-actions" aria-label="Quick questions"><button type="button" data-assistant-prompt="Next class">Next class</button><button type="button" data-assistant-prompt="Today's schedule">Today's schedule</button><button type="button" data-assistant-prompt="Find a classroom">Find a classroom</button><button type="button" data-assistant-prompt="Campus map">Campus map</button><button type="button" data-assistant-prompt="Where am I?">Where am I?</button><button type="button" data-assistant-prompt="How do I get there?">How do I get there?</button></div><form class="chat-form" id="chatForm"><input id="chatInput" type="text" aria-label="Ask the CampusSaathi Assistant" placeholder="Ask about your campus…" autocomplete="off"><button class="chat-send" type="submit" aria-label="Send message">↑</button></form></aside>
+	<aside class="chat-panel" id="chatPanel" aria-label="CampusSaathi Assistant" aria-hidden="true"><header class="chat-header"><div class="chat-heading"><span class="chat-avatar" aria-hidden="true">C</span><div><strong>CampusSaathi Assistant</strong><small>Campus help · available offline</small></div></div><button class="chat-close" id="chatClose" type="button" aria-label="Close assistant">×</button></header><div class="chat-transcript" id="chatTranscript" role="log" aria-live="polite" aria-relevant="additions text"><div class="chat-message">Hi Sriya! I can help with today's classes, classrooms, buildings, and routes. What are you looking for?</div></div><div class="chat-quick-actions" aria-label="Quick questions"><button type="button" data-assistant-prompt="Where is my next class?">Next class</button><button type="button" data-assistant-prompt="What classes do I have today?">Today's schedule</button><button type="button" data-assistant-prompt="Find a classroom">Find a classroom</button><button type="button" data-assistant-prompt="Campus map">Campus map</button><button type="button" data-assistant-prompt="Where am I?">Where am I?</button><button type="button" data-assistant-prompt="How do I get there?">How do I get there?</button></div><form class="chat-form" id="chatForm"><input id="chatInput" type="text" aria-label="Ask the CampusSaathi Assistant" placeholder="Ask about your campus…" autocomplete="off" maxlength="240" required><button class="chat-send" type="submit" aria-label="Send message">↑</button></form><p class="chat-local-note">Local demo assistant · answers use mock campus data</p></aside>
 	<div class="toast" id="toast" role="status" aria-live="polite"></div>
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 	<script>
@@ -690,6 +697,39 @@
 		byId("todayDate").textContent = fullDate;
 		byId("scheduleDate").textContent = new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short" }).format(new Date());
 
+		function setTheme(theme) {
+			const isDark = theme === "dark";
+			document.body.dataset.theme = isDark ? "dark" : "light";
+			byId("themeToggle").textContent = isDark ? "☀" : "☾";
+			byId("themeToggle").setAttribute("aria-pressed", String(isDark));
+			byId("themeToggle").setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+			try { localStorage.setItem("campussaathi-theme", isDark ? "dark" : "light"); } catch { }
+		}
+		try { setTheme(localStorage.getItem("campussaathi-theme") || "light"); } catch { setTheme("light"); }
+
+		function openAssistant() {
+			byId("chatPanel").classList.add("open");
+			byId("chatPanel").setAttribute("aria-hidden", "false");
+			byId("chatLauncher").setAttribute("aria-expanded", "true");
+			byId("chatInput").focus();
+		}
+
+		function closeAssistant() {
+			byId("chatPanel").classList.remove("open");
+			byId("chatPanel").setAttribute("aria-hidden", "true");
+			byId("chatLauncher").setAttribute("aria-expanded", "false");
+			byId("chatLauncher").focus();
+		}
+
+		byId("themeToggle").addEventListener("click", () => {
+			setTheme(document.body.dataset.theme === "dark" ? "light" : "dark");
+		});
+		byId("chatLauncher").addEventListener("click", openAssistant);
+		byId("chatClose").addEventListener("click", closeAssistant);
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && byId("chatPanel").classList.contains("open")) closeAssistant();
+		});
+
 		function classRow(item, withStatus) {
 			const status = withStatus ? `<span class="class-status ${item.next ? "next" : ""}">${item.next ? "Up next" : "On campus"}</span>` : `<span class="room-tag">${item.building} · ${item.room}</span>`;
 			return `<div class="class-row"><span class="class-time">${item.time}</span><div class="class-main"><strong>${item.subject}</strong><small>${item.code} · ${item.faculty}</small><button type="button" class="class-navigate" data-navigate-class-index="${mockClasses.indexOf(item)}">Navigate</button></div>${status}</div>`;
@@ -710,6 +750,12 @@
 			document.querySelectorAll(".screen").forEach((screen) => screen.classList.toggle("active", screen.id === `screen-${name}`));
 			const signedIn = Boolean(sessionStorage.getItem("campussaathi-demo"));
 			byId("bottomNav").classList.toggle("visible", signedIn && !["welcome", "login"].includes(name));
+			byId("chatLauncher").classList.toggle("visible", signedIn && !["welcome", "login"].includes(name));
+			if (!signedIn || ["welcome", "login"].includes(name)) {
+				byId("chatPanel").classList.remove("open");
+				byId("chatPanel").setAttribute("aria-hidden", "true");
+				byId("chatLauncher").setAttribute("aria-expanded", "false");
+			}
 			byId("topbarUser").hidden = !signedIn || ["welcome", "login"].includes(name);
 			document.querySelectorAll(".nav-button").forEach((button) => button.classList.toggle("active", button.dataset.screen === (name === "navigation" ? "map" : name)));
 			window.scrollTo({ top: 0, behavior: "smooth" });
@@ -927,6 +973,11 @@
 		}
 
 		document.addEventListener("click", (event) => {
+			const classNavigationButton = event.target.closest("[data-navigate-class-index]");
+			if (classNavigationButton) {
+				navigateToClass(Number.parseInt(classNavigationButton.dataset.navigateClassIndex, 10));
+				return;
+			}
 			const screenButton = event.target.closest("[data-screen]");
 			const destinationButton = event.target.closest("[data-select-destination]");
 			if (destinationButton) {
@@ -942,6 +993,111 @@
 				if (screenButton.dataset.destination) setDestinationRoom(screenButton.dataset.destination.split(" · ")[0]);
 				showScreen(target);
 			}
+		});
+
+		function navigateToClass(classIndex) {
+			const classItem = mockClasses[classIndex];
+			if (!classItem?.destinationNodeId) {
+				showToast("This class doesn’t have a mapped room yet.");
+				return;
+			}
+			activeClassIndex = classIndex;
+			selectedDestination = classItem.building;
+			byId("routeEndSelect").value = classItem.destinationNodeId;
+			byId("routeLocationNote").textContent = "Using the selected campus starting point. Change it below if needed.";
+			showScreen("navigation");
+		}
+
+		const CampusAssistant = {
+			async respond(message) {
+				const query = message.toLowerCase().replace(/[’']/g, "'").trim();
+				const nextClass = mockClasses.find((item) => item.next) || mockClasses[0];
+				const nextRoom = campusNodeById.get(nextClass.destinationNodeId);
+				const nextBuilding = campusBuildingById.get(nextRoom.buildingId);
+				if (/campus map|open map|show.*map/.test(query)) {
+					showScreen("map");
+					return "I’ve opened the campus map. Building locations are approximate mock data; tap a marker to preview a destination.";
+				}
+				if (/today|timetable|schedule|classes do i have/.test(query)) {
+					return `Here’s today’s schedule:\n${mockClasses.map((item) => `${item.time} · ${item.subject} · ${item.building}, Room ${item.room}`).join("\n")}`;
+				}
+				if (/next class|where is my next|up next/.test(query)) {
+					return `Your next class is ${nextClass.subject} in ${nextBuilding.name}, Floor ${nextRoom.floorNumber}, Room ${nextRoom.roomNumber} at ${nextClass.time}.`;
+				}
+				if (/where am i|my location|current location/.test(query)) {
+					if (!currentPosition && navigator.geolocation) {
+						currentPosition = await new Promise((resolve) => navigator.geolocation.getCurrentPosition(
+							(position) => resolve([position.coords.latitude, position.coords.longitude]),
+							() => resolve(null),
+							{ enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
+						));
+					}
+					if (currentPosition) return `Your GPS location is ${currentPosition[0].toFixed(5)}, ${currentPosition[1].toFixed(5)}. The nearest mock campus building is ${nearestCampusBuilding(currentPosition).name}.`;
+					return "GPS location is unavailable. Your demo starting point is Block 26, Floor 3. You can choose a different building, floor, corridor, or room in the navigation screen.";
+				}
+				if (/how do i get there|route|directions|elevator|lift|stairs|corridor|navigate/.test(query)) {
+					if (!activeRouteResult) await updateRoute();
+					if (!activeRouteResult) return "I couldn’t find a route for that selection. Open Campus Map and choose a building, or select a starting location manually.";
+					const mode = activeRouteResult.usedOutdoorRoute ? "This route includes an outdoor section" : "I found an indoor route";
+					return `${mode}. ${activeRouteResult.instructions.join(" ")} Vertical access: ${activeRouteResult.verticalAccessUsed.length ? activeRouteResult.verticalAccessUsed.join(" and ") : "not needed"}. Estimated walk: ${activeRouteResult.estimatedWalkingTimeMinutes} minutes.`;
+				}
+				const building = campusBuildings.find((item) => query.includes(item.name.toLowerCase()));
+				const roomSearch = query.match(/(?:room\s*)?(\d{2,3}(?:-\d{2}-\d{2})?)/);
+			if (roomSearch) {
+					for (const candidateBuilding of campusBuildings) {
+						for (const floor of candidateBuilding.floors) {
+							const room = floor.rooms.find((item) => item.roomNumber.toLowerCase() === roomSearch[1].toLowerCase());
+							if (room) return `Room ${room.roomNumber} is in ${candidateBuilding.name}, Floor ${floor.floorNumber}. This is mock campus data; check signs or verified campus information on arrival.`;
+						}
+					}
+					return `I don’t have Room ${roomSearch[1]} in the current mock directory. Try a timetable class or select a known building.`;
+				}
+				if (building) return `${building.name} has ${building.floors.length} mock floors. Choose it on Campus Map to see its marker and preview a route. The location and floor plan are illustrative, not official.`;
+				if (/find a classroom|classroom|room/.test(query)) return "Tell me the room number, such as Room 204, or ask where your next class meets.";
+				if (/help|what can you do|hello|hi\b/.test(query)) return "I can look up your classes, find mock rooms and buildings, explain your calculated route, and open the campus map. Try a quick action below.";
+				return "I can help with today’s timetable, class rooms, building locations, stairs or elevators, and route instructions. These answers use local mock data, not an official LPU directory.";
+			}
+		};
+
+		function appendChatMessage(message, sender) {
+			const bubble = document.createElement("div");
+			bubble.className = `chat-message ${sender === "user" ? "user" : "assistant-reply"}`;
+			bubble.textContent = message;
+			byId("chatTranscript").appendChild(bubble);
+			byId("chatTranscript").scrollTop = byId("chatTranscript").scrollHeight;
+			return bubble;
+		}
+
+		async function submitAssistantPrompt(message) {
+			const cleanMessage = message.trim();
+			if (!cleanMessage) return;
+			appendChatMessage(cleanMessage, "user");
+			const typing = appendChatMessage("Checking your campus info…", "assistant");
+			typing.classList.add("typing");
+			byId("chatForm").querySelector("button").disabled = true;
+			try {
+				const answer = await CampusAssistant.respond(cleanMessage);
+				typing.remove();
+				appendChatMessage(answer, "assistant");
+			} catch {
+				typing.remove();
+				appendChatMessage("I couldn’t read that campus information just now. Please try again or use the map and timetable screens.", "assistant");
+			} finally {
+				byId("chatForm").querySelector("button").disabled = false;
+				byId("chatInput").focus();
+			}
+		}
+
+		byId("chatForm").addEventListener("submit", (event) => {
+			event.preventDefault();
+			const input = byId("chatInput");
+			const message = input.value;
+			input.value = "";
+			submitAssistantPrompt(message);
+		});
+		byId("chatPanel").addEventListener("click", (event) => {
+			const promptButton = event.target.closest("[data-assistant-prompt]");
+			if (promptButton) submitAssistantPrompt(promptButton.dataset.assistantPrompt);
 		});
 
 		byId("loginForm").addEventListener("submit", (event) => {
